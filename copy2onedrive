@@ -1,0 +1,423 @@
+#Set title
+$host.ui.RawUI.WindowTitle = "Copying Files to OneDrive - Redflex2Verra Data Transfer"
+
+$BackupDirectory = "$env:USERPROFILE\OneDrive - Verra Mobility\Backup-$env:USERNAME-$(Get-Date -UFormat '%m-%d-%Y')"
+mkdir $BackupDirectory -ErrorAction SilentlyContinue | Out-Null
+
+Add-Type -AssemblyName System.Windows.Forms
+
+$DataTransferForm = New-Object -TypeName System.Windows.Forms.Form
+$DataTransferForm.StartPosition = 'CenterScreen'
+[System.Windows.Forms.Application]::EnableVisualStyles()
+[System.Windows.Forms.CheckBox]$Desktop = $null
+[System.Windows.Forms.CheckBox]$Downloads = $null
+[System.Windows.Forms.CheckBox]$Documents = $null
+[System.Windows.Forms.CheckBox]$Music = $null
+[System.Windows.Forms.CheckBox]$Pictures = $null
+[System.Windows.Forms.CheckBox]$Videos = $null
+[System.Windows.Forms.CheckBox]$Bookmarks = $null
+[System.Windows.Forms.CheckBox]$QuickAccess = $null
+[System.Windows.Forms.CheckBox]$Wallpaper = $null
+[System.Windows.Forms.CheckBox]$OutlookSignatures = $null
+[System.Windows.Forms.CheckBox]$NetworkShares = $null
+[System.Windows.Forms.Label]$SelectDataLabel = $null
+[System.Windows.Forms.Label]$BackupLocationLabel = $null
+[System.Windows.Forms.TextBox]$BackupLocation = $null
+[System.Windows.Forms.Button]$OKButton = $null
+
+function InitializeComponent {
+
+$Desktop = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Downloads = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Documents = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Music = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Pictures = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Videos = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Bookmarks = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$QuickAccess = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$Wallpaper = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$OutlookSignatures = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$NetworkShares = (New-Object -TypeName System.Windows.Forms.CheckBox)
+$SelectDataLabel = (New-Object -TypeName System.Windows.Forms.Label)
+$BackupLocationLabel = (New-Object -TypeName System.Windows.Forms.Label)
+$BackupLocation = (New-Object -TypeName System.Windows.Forms.TextBox)
+$OKButton = (New-Object -TypeName System.Windows.Forms.Button)
+$DataTransferForm.SuspendLayout()
+#
+#BackupLocationLabel
+#
+$BackupLocationLabel.BackColor = [System.Drawing.SystemColors]::Control
+$BackupLocationLabel.Font = (New-Object -TypeName System.Drawing.Font("Arial",12,[System.Drawing.FontStyle]::Bold))
+$BackupLocationLabel.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$BackupLocationLabel.Cursor = [System.Windows.Forms.Cursors]::IBeam
+$BackupLocationLabel.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]32,[System.Int32]34))
+$BackupLocationLabel.Name = [System.String]'BackupLocationLabel'
+$BackupLocationLabel.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$BackupLocationLabel.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]300,[System.Int32]23))
+$BackupLocationLabel.TabIndex = [System.Int32]3
+$BackupLocationLabel.Text = [System.String]'Directory files are being copied to:'
+$BackupLocationLabel.add_Click($DestinationboxLabel_Click)
+#
+#BackupLocation
+#
+$BackupLocation.BackColor = [System.Drawing.SystemColors]::Window
+$BackupLocation.Enabled = $False
+$BackupLocation.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]10))
+$BackupLocation.ForeColor = [System.Drawing.SystemColors]::WindowText
+$BackupLocation.ImeMode = [System.Windows.Forms.ImeMode]::NoControl
+$BackupLocation.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]35,[System.Int32]65))
+$BackupLocation.Name = [System.String]'BackupLocation'
+$BackupLocation.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$BackupLocation.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]630,[System.Int32]29))
+$BackupLocation.TabIndex = [System.Int32]4
+$BackupLocation.Text = $BackupDirectory
+#
+#SelectDataLabel
+#
+$SelectDataLabel.Cursor = [System.Windows.Forms.Cursors]::IBeam
+$SelectDataLabel.Font = (New-Object -TypeName System.Drawing.Font("Arial",12,[System.Drawing.FontStyle]::Bold))
+$SelectDataLabel.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]32,[System.Int32]120))
+$SelectDataLabel.Name = [System.String]'SelectDataLabel'
+$SelectDataLabel.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]476,[System.Int32]23))
+$SelectDataLabel.TabIndex = [System.Int32]5
+$SelectDataLabel.Text = [System.String]'Select the data to copy:'
+$SelectDataLabel.add_Click($SelectDataLabel_Click)
+#
+#Desktop
+#
+$Desktop.Checked = $true
+$Desktop.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Desktop.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Desktop.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]150))
+$Desktop.Name = [System.String]'Desktop'
+$Desktop.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]33))
+$Desktop.TabIndex = [System.Int32]0
+$Desktop.Text = [System.String]'Desktop'
+$Desktop.UseVisualStyleBackColor = $true
+$Desktop.add_CheckedChanged($Desktop_CheckedChanged)
+#
+#Downloads
+#
+$Downloads.BackColor = [System.Drawing.SystemColors]::Control
+$Downloads.Checked = $true
+$Downloads.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Downloads.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Downloads.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Downloads.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]177))
+$Downloads.Name = [System.String]'Downloads'
+$Downloads.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Downloads.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]33))
+$Downloads.TabIndex = [System.Int32]0
+$Downloads.Text = [System.String]'Downloads'
+$Downloads.UseVisualStyleBackColor = $true
+$Downloads.add_CheckedChanged($Desktop_CheckedChanged)
+#
+#Documents
+#
+$Documents.BackColor = [System.Drawing.SystemColors]::Control
+$Documents.Checked = $true
+$Documents.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Documents.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Documents.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Documents.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]204))
+$Documents.Name = [System.String]'Documents'
+$Documents.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Documents.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]33))
+$Documents.TabIndex = [System.Int32]0
+$Documents.Text = [System.String]'Documents'
+$Documents.UseVisualStyleBackColor = $true
+$Documents.add_CheckedChanged($Downloads_CheckedChanged)
+#
+#Music
+#
+$Music.BackColor = [System.Drawing.SystemColors]::Control
+$Music.Checked = $true
+$Music.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Music.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Music.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Music.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]231))
+$Music.Name = [System.String]'Music'
+$Music.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Music.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]29))
+$Music.TabIndex = [System.Int32]0
+$Music.Text = [System.String]'Music'
+$Music.UseVisualStyleBackColor = $true
+$Music.add_CheckedChanged($Documents_CheckedChanged)
+#
+#Pictures
+#
+$Pictures.BackColor = [System.Drawing.SystemColors]::Control
+$Pictures.Checked = $true
+$Pictures.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Pictures.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Pictures.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Pictures.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]258))
+$Pictures.Name = [System.String]'Pictures'
+$Pictures.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Pictures.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]33))
+$Pictures.TabIndex = [System.Int32]0
+$Pictures.Text = [System.String]'Pictures'
+$Pictures.UseVisualStyleBackColor = $true
+#
+#Videos
+#
+$Videos.BackColor = [System.Drawing.SystemColors]::Control
+$Videos.Checked = $true
+$Videos.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Videos.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Videos.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Videos.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]285))
+$Videos.Name = [System.String]'Videos'
+$Videos.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Videos.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]181,[System.Int32]33))
+$Videos.TabIndex = [System.Int32]0
+$Videos.Text = [System.String]'Videos'
+$Videos.UseVisualStyleBackColor = $true
+#
+#Bookmarks
+#
+$Bookmarks.BackColor = [System.Drawing.SystemColors]::Control
+$Bookmarks.Checked = $true
+$Bookmarks.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Bookmarks.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Bookmarks.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Bookmarks.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]312))
+$Bookmarks.Name = [System.String]'Bookmarks'
+$Bookmarks.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Bookmarks.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]214,[System.Int32]33))
+$Bookmarks.TabIndex = [System.Int32]0
+$Bookmarks.Text = [System.String]'Browser Bookmarks'
+$Bookmarks.UseVisualStyleBackColor = $true
+#
+#QuickAccess
+#
+$QuickAccess.BackColor = [System.Drawing.SystemColors]::Control
+$QuickAccess.Checked = $true
+$QuickAccess.CheckState = [System.Windows.Forms.CheckState]::Checked
+$QuickAccess.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$QuickAccess.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$QuickAccess.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]339))
+$QuickAccess.Name = [System.String]'QuickAccess'
+$QuickAccess.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$QuickAccess.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]274,[System.Int32]33))
+$QuickAccess.TabIndex = [System.Int32]0
+$QuickAccess.Text = [System.String]'File Explorer Quick Access'
+$QuickAccess.UseVisualStyleBackColor = $true
+$QuickAccess.add_CheckedChanged($Bookmarks_CheckedChanged)
+#
+#OutlookSignatures
+#
+$OutlookSignatures.BackColor = [System.Drawing.SystemColors]::Control
+$OutlookSignatures.Checked = $true
+$OutlookSignatures.CheckState = [System.Windows.Forms.CheckState]::Checked
+$OutlookSignatures.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$OutlookSignatures.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$OutlookSignatures.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]366))
+$OutlookSignatures.Name = [System.String]'OutlookSignatures'
+$OutlookSignatures.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$OutlookSignatures.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]274,[System.Int32]33))
+$OutlookSignatures.TabIndex = [System.Int32]0
+$OutlookSignatures.Text = [System.String]'Outlook Signatures'
+$OutlookSignatures.UseVisualStyleBackColor = $true
+#
+#Wallpaper
+#
+$Wallpaper.BackColor = [System.Drawing.SystemColors]::Control
+$Wallpaper.Checked = $true
+$Wallpaper.CheckState = [System.Windows.Forms.CheckState]::Checked
+$Wallpaper.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$Wallpaper.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$Wallpaper.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]393))
+$Wallpaper.Name = [System.String]'Wallpaper'
+$Wallpaper.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$Wallpaper.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]274,[System.Int32]33))
+$Wallpaper.TabIndex = [System.Int32]0
+$Wallpaper.Text = [System.String]'Wallpaper'
+$Wallpaper.UseVisualStyleBackColor = $true
+#
+#Network Shares
+#
+$NetworkShares.BackColor = [System.Drawing.SystemColors]::Control
+$NetworkShares.Checked = $true
+$NetworkShares.CheckState = [System.Windows.Forms.CheckState]::Checked
+$NetworkShares.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$NetworkShares.ForeColor = [System.Drawing.Color]::FromArgb(([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)),([System.Int32]([System.Byte][System.Byte]0)))
+
+$NetworkShares.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]37,[System.Int32]420))
+$NetworkShares.Name = [System.String]'Network Shares'
+$NetworkShares.RightToLeft = [System.Windows.Forms.RightToLeft]::No
+$NetworkShares.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]274,[System.Int32]33))
+$NetworkShares.TabIndex = [System.Int32]0
+$NetworkShares.Text = [System.String]'Network Shares'
+$NetworkShares.UseVisualStyleBackColor = $true
+#
+#OKButton
+#
+$OKButton.Font = (New-Object -TypeName System.Drawing.Font -ArgumentList @([System.String]'Arial',[System.Single]12))
+$OKButton.Location = (New-Object -TypeName System.Drawing.Point -ArgumentList @([System.Int32]577,[System.Int32]401))
+$OKButton.Name = [System.String]'OKButton'
+$OKButton.Size = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]89,[System.Int32]48))
+$OKButton.TabIndex = [System.Int32]7
+$OKButton.Text = [System.String]'OK'
+$OKButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+$DataTransferForm.AcceptButton = $OKButton
+$OKButton.UseVisualStyleBackColor = $true
+#
+#DataTransferForm
+#
+$DataTransferForm.ClientSize = (New-Object -TypeName System.Drawing.Size -ArgumentList @([System.Int32]700,[System.Int32]482))
+$DataTransferForm.Controls.Add($BackupLocationLabel)
+$DataTransferForm.Controls.Add($BackupLocation)
+$DataTransferForm.Controls.Add($SelectDataLabel)
+$DataTransferForm.Controls.Add($Desktop)
+$DataTransferForm.Controls.Add($Downloads)
+$DataTransferForm.Controls.Add($Documents)
+$DataTransferForm.Controls.Add($Music)
+$DataTransferForm.Controls.Add($Pictures)
+$DataTransferForm.Controls.Add($Videos)
+$DataTransferForm.Controls.Add($Bookmarks)
+$DataTransferForm.Controls.Add($QuickAccess)
+$DataTransferForm.Controls.Add($OutlookSignatures)
+$DataTransferForm.Controls.Add($Wallpaper)
+$DataTransferForm.Controls.Add($NetworkShares)
+$DataTransferForm.Controls.Add($OKButton)
+$DataTransferForm.Text = [System.String]'Select Data to Copy - Redflex2Verra Data Transfer'
+$DataTransferForm.add_Load($DataTransferForm_Load)
+$DataTransferForm.ResumeLayout($false)
+$DataTransferForm.PerformLayout()
+Add-Member -InputObject $DataTransferForm -Name BackupLocationLabel -Value $BackupLocationLabel -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name BackupLocation -Value $BackupLocation -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name SelectDataLabel -Value $BackupLocation -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Desktop -Value $Desktop -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Downloads -Value $Downloads -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Documents -Value $Documents -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Music -Value $Music -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Pictures -Value $Pictures -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Videos -Value $Videos -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Bookmarks -Value $Bookmarks -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name QuickAccess -Value $QuickAccess -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name OutlookSignatures -Value $OutlookSignatures -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name Wallpaper -Value $Wallpaper -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name NetworkShares -Value $NetworkShares -MemberType NoteProperty
+Add-Member -InputObject $DataTransferForm -Name OKButton -Value $OKButton -MemberType NoteProperty
+}
+. InitializeComponent
+
+$result = $DataTransferForm.ShowDialog()
+
+if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+
+    if ($Desktop.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Desktop..."
+        mkdir "$BackupDirectory\Desktop" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Desktop" "$BackupDirectory\Desktop" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Downloads.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Downloads..."
+        mkdir "$BackupDirectory\Downloads" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Downloads" "$BackupDirectory\Downloads" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Documents.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Documents..."
+        mkdir "$BackupDirectory\Documents" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Documents" "$BackupDirectory\Documents" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+        Write-Host "Searching for Outlook .PST files..."
+        mkdir "$BackupDirectory\OutlookPSTs" -ErrorAction SilentlyContinue | Out-Null
+        $PSTs = Get-ChildItem -Path "$env:USERPROFILE\Documents" -File '*.pst' -Recurse | Select-Object -ExpandProperty FullName
+        if ($PSTs -eq $null) {
+            $PSTs = "No Outlook .PST files found on source PC."
+        }
+        $PSTs > "$BackupDirectory\OutlookPSTs\OutlookPSTs.txt"
+        Write-Host " "
+    }
+
+    if ($Music.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Music..."
+        mkdir "$BackupDirectory\Music" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Music" "$BackupDirectory\Music" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Pictures.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Pictures..."
+        mkdir "$BackupDirectory\Pictures" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Pictures" "$BackupDirectory\Pictures" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Videos.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Videos..."
+        mkdir "$BackupDirectory\Videos" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Videos" "$BackupDirectory\Videos" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Bookmarks.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Browser Bookmarks..."
+        mkdir "$BackupDirectory\Favorites" -ErrorAction SilentlyContinue | Out-Null
+        mkdir "$BackupDirectory\ChromeBookmarks" -ErrorAction SilentlyContinue | Out-Null
+        mkdir "$BackupDirectory\EdgeBookmarks" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\Favorites" "$BackupDirectory\Favorites" /E /Z /R:3 /W:3 /MT:16 /NJH
+        robocopy "$env:USERPROFILE\AppData\Local\Google\Chrome\User Data\Default" "$BackupDirectory\ChromeBookmarks" Bookmarks /Z /R:3 /W:3 /MT:16 /NJH
+        robocopy "$env:USERPROFILE\AppData\Local\Microsoft\Edge\User Data\Default" "$BackupDirectory\EdgeBookmarks" Bookmarks /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($QuickAccess.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying File Explorer Quick Access Items..."
+        mkdir "$BackupDirectory\QuickAccess" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations" "$BackupDirectory\QuickAccess" f01b4d95cf55d32a.automaticDestinations-ms /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($OutlookSignatures.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Outlook Signatures..."
+        mkdir "$BackupDirectory\OutlookSignatures" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\AppData\Roaming\Microsoft\Signatures" "$BackupDirectory\OutlookSignatures" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($Wallpaper.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Copying Wallpaper..."
+        mkdir "$BackupDirectory\Wallpaper" -ErrorAction SilentlyContinue | Out-Null
+        robocopy "$env:USERPROFILE\AppData\Roaming\Microsoft\Windows\Themes" "$BackupDirectory\Wallpaper" /E /Z /R:3 /W:3 /MT:16 /NJH
+        Write-Host " "
+    }
+
+    if ($NetworkShares.Checked -eq $true) {
+        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Piping output of ""net use"" command to text file..."
+        mkdir "$BackupDirectory\NetworkShares" -ErrorAction SilentlyContinue | Out-Null
+        net use > "$BackupDirectory\NetworkShares\NetworkShares.txt"
+        Write-Host " "
+    }
+
+    mkdir "$BackupDirectory\SharedMailboxes" -ErrorAction SilentlyContinue | Out-Null
+    (Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Microsoft\Outlook" -File '*.ost' -Name | ForEach-Object -Process {[System.IO.Path]::GetFileNameWithoutExtension($_)}) > "$BackupDirectory\SharedMailboxes\SharedMailboxes.txt"
+
+    mkdir "$BackupDirectory\SourcePCInfo" -ErrorAction SilentlyContinue | Out-Null
+    $env:computername > "$BackupDirectory\SourcePCInfo\SourcePCInfo.txt"
+    (Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem).Domain >> "$BackupDirectory\SourcePCInfo\SourcePCInfo.txt"
+    (Get-WmiObject Win32_computersystem).Model >> "$BackupDirectory\SourcePCInfo\SourcePCInfo.txt"
+    (Get-WmiObject Win32_BIOS).SerialNumber >> "$BackupDirectory\SourcePCInfo\SourcePCInfo.txt"
+
+    Write-Host "------------------------------------------------------------------------------"
+    Write-Host " "
+    Write-Host -BackgroundColor Green -ForegroundColor Black "Data transfer complete!"
+    Write-Host " "
+    pause
+}
